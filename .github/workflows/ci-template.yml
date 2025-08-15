@@ -13,6 +13,9 @@ on:
         required: false
         type: string
         default: "echo no-tests"
+      extra_token:        # 
+        required: false
+        type: string
     secrets:
       EXTRA_TOKEN:
         required: false
@@ -76,5 +79,5 @@ jobs:
           ${{ inputs.run_tests_cmd }}
 
       - name: Use secret if present
-        if: ${{ secrets.EXTRA_TOKEN != '' }}
+        if: ${{ inputs.extra_token != '' }} #usar input antes do secrets
         run: echo "EXTRA_TOKEN definido"
