@@ -66,15 +66,15 @@ jobs:
           python -m venv venv
           source venv/bin/activate
           python -m pip install --upgrade pip
-          python -m pip install -r requirements.txt
+          python -m pip install -r requirements.txt 
 
       - name: Run tests
         run: |
           if [ "${{ inputs.language }}" = "python" ]; then
             source src/py-app/venv/bin/activate
+            python -m pytest -q
+          else
+            ${{ inputs.run_tests_cmd }}
           fi
-          ${{ inputs.run_tests_cmd }}
 
-      - name: Use secret if present
-        if: ${{ inputs.extra_token != '' }} #usar input antes do secrets
-        run: echo "EXTRA_TOKEN definido"
+     
