@@ -19,5 +19,4 @@ jobs:
       language: python
       version: "3.12"
       run_tests_cmd: "cd src/py-app && pytest -q"
-    secrets:
-      EXTRA_TOKEN: ${{ secrets.EXTRA_TOKEN }}
+    secrets: inherit
