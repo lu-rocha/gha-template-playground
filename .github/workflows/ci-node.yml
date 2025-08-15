@@ -19,5 +19,4 @@ jobs:
       language: node
       version: "20"
       run_tests_cmd: "cd src/node-app && npm test --silent"
-      extra_token: ${{ secrets.EXTRA_TOKEN }} 
     secrets: inherit
