@@ -1,0 +1,23 @@
+name: CI Python Example
+
+on:
+  push:
+    tags: [ "v*" ]
+    branches: [ main ]
+    paths: [ "src/py-app/**", ".github/**" ]
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  call-template:
+    uses: ./.github/workflows/templates/ci-template.yml
+    with:
+      language: python
+      version: "3.12"
+      run_tests_cmd: "cd src/py-app && pytest -q"
+    secrets:
+      EXTRA_TOKEN: ${{ secrets.EXTRA_TOKEN }}

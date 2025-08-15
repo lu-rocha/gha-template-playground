@@ -1,0 +1,21 @@
+name: CI Node Example
+
+on:
+  push:
+    branches: [ main ]
+    paths: [ "src/node-app/**", ".github/**" ]
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  call-template:
+    uses: ./.github/workflows/templates/ci-template.yml
+    with:
+      language: node
+      version: "20"
+      run_tests_cmd: "cd src/node-app && npm test --silent"
+    secrets: inherit

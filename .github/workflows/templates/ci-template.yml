@@ -1,0 +1,80 @@
+name: CI Template
+on:
+  workflow_call:
+    inputs:
+      language:
+        required: true
+        type: string
+      version:
+        required: false
+        type: string
+        default: "lts"     # node lts | python 3.12 como exemplo
+      run_tests_cmd:
+        required: false
+        type: string
+        default: "echo no-tests"
+    secrets:
+      EXTRA_TOKEN:
+        required: false
+permissions:
+  contents: read
+  # adicione outras permissões se necessário (ex.: id-token: write)
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}-${{ inputs.language }}
+      cancel-in-progress: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup env (composite)
+        uses: ./.github/actions/setup-env
+        with:
+          language: ${{ inputs.language }}
+          version: ${{ inputs.version }}
+
+      - name: Cache deps (Node)
+        if: ${{ inputs.language == 'node' }}
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.npm
+            **/node_modules
+          key: npm-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: npm-${{ runner.os }}-
+
+      - name: Cache deps (Python)
+        if: ${{ inputs.language == 'python' }}
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ runner.os }}-${{ hashFiles('**/requirements*.txt') }}
+          restore-keys: pip-${{ runner.os }}-
+
+      - name: Install deps (Node)
+        if: ${{ inputs.language == 'node' }}
+        run: |
+          cd src/node-app
+          npm ci
+
+      - name: Setup Python venv and install deps #ativa venv antes dos testes
+        if: ${{ inputs.language == 'python' }}
+        run: |
+          cd src/py-app
+          python -m venv venv
+          source venv/bin/activate
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run tests
+        run: |
+          if [ "${{ inputs.language }}" = "python" ]; then
+            source src/py-app/venv/bin/activate
+          fi
+          ${{ inputs.run_tests_cmd }}
+
+      - name: Use secret if present
+        if: ${{ secrets.EXTRA_TOKEN != '' }}
+        run: echo "EXTRA_TOKEN definido"

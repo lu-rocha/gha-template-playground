@@ -1,0 +1,22 @@
+name: "Setup Env"
+description: "Configura toolchain e cache básico"
+inputs:
+  language:
+    description: "node|python"
+    required: true
+  version:
+    description: "Versão da linguagem"
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - shell: bash
+      run: echo "Language=${{ inputs.language }} Version=${{ inputs.version }}"
+    - if: ${{ inputs.language == 'node' }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.version }}
+    - if: ${{ inputs.language == 'python' }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.version }}
