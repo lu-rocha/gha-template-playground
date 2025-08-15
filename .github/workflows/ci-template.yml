@@ -16,9 +16,6 @@ on:
       extra_token:        # 
         required: false
         type: string
-    secrets:
-      EXTRA_TOKEN:
-        required: false
 permissions:
   contents: read
   # adicione outras permissões se necessário (ex.: id-token: write)
